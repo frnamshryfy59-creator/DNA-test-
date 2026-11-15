@@ -171,3 +171,28 @@ footer {
     height: 290px;
   }
 }
+.controls {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.controls label {
+  color: #55d8ff;
+  font-size: 14px;
+}
+
+.controls select,
+.controls input {
+  padding: 12px;
+  background: #080e1b;
+  color: white;
+  border: 1px solid #42617e;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+#generateButton {
+  background: #59dfa0;
+  color: #07111d;
+}
