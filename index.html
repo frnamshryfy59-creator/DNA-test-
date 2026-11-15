@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DNA LAB</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>DNA <span>LAB</span></h1>
+  <p>INTERACTIVE DNA EXPLORER</p>
+</header>
+
+<main>
+  <section class="viewer-card">
+    <h2>3D DNA STRUCTURE <span>● LIVE</span></h2>
+    <canvas id="dnaCanvas"></canvas>
+    <button id="rotateButton">Pause Rotation</button>
+  </section>
+
+  <section class="editor">
+    <h2>DNA Sequence</h2>
+    <p>Enter only A, T, G, C</p>
+
+    <input id="sequenceInput" value="ATGCGTAC"
+      placeholder="ATGCGTAC" maxlength="80">
+
+    <div class="buttons">
+      <button data-base="A">A</button>
+      <button data-base="T">T</button>
+      <button data-base="G">G</button>
+      <button data-base="C">C</button>
+    </div>
+
+    <h3>Complementary Strand</h3>
+    <div id="complement">TACGCATG</div>
+
+    <div class="stats">
+      <p>Bases: <strong id="count">8</strong></p>
+      <p>GC Content: <strong id="gc">50%</strong></p>
+    </div>
+
+    <button id="clearButton">Clear Sequence</button>
+  </section>
+</main>
+
+<footer>DNA LAB · MOLECULAR EXPLORER</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
