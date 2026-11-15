@@ -19,7 +19,7 @@ const pairs = {
   C: "G"
 };
 
-let sequence = "ATGCGTAC";
+let sequence = "TTTT";
 let angle = 0;
 let rotating = true;
 let dragging = false;
