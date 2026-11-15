@@ -5,7 +5,7 @@
 
 body {
   margin: 0;
-  padding: 20px;
+  padding: 18px;
   background: #080e1b;
   color: white;
   font-family: Arial, sans-serif;
@@ -35,7 +35,8 @@ main {
   margin: auto;
 }
 
-.viewer-card, .editor {
+.viewer-card,
+.editor {
   background: #111c30;
   border: 1px solid #263a55;
   border-radius: 15px;
@@ -55,7 +56,7 @@ main {
 
 #dnaCanvas {
   width: 100%;
-  height: 330px;
+  height: 350px;
   display: block;
   background: radial-gradient(circle, #183b5c, #080e1b);
   border-radius: 12px;
@@ -74,6 +75,7 @@ button {
   margin-top: 12px;
   background: #203b59;
   color: white;
+  width: 100%;
 }
 
 .editor h2 {
@@ -85,14 +87,25 @@ button {
   font-size: 13px;
 }
 
-#sequenceInput {
+.editor label {
+  display: block;
+  margin: 17px 0 8px;
+  color: #55d8ff;
+  font-size: 14px;
+}
+
+.editor input,
+.editor select {
   width: 100%;
-  padding: 15px;
+  padding: 14px;
   background: #080e1b;
   color: white;
   border: 1px solid #42617e;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 16px;
+}
+
+#sequenceInput {
   letter-spacing: 3px;
   text-transform: uppercase;
 }
@@ -105,7 +118,7 @@ button {
 }
 
 .buttons button {
-  font-size: 23px;
+  font-size: 22px;
   color: #07111d;
 }
 
@@ -125,8 +138,20 @@ button {
   background: #bc8cff;
 }
 
+#generateButton {
+  margin-top: 15px;
+  width: 100%;
+  background: #59dfa0;
+  color: #07111d;
+}
+
+.divider {
+  height: 1px;
+  background: #263a55;
+  margin: 25px 0;
+}
+
 .editor h3 {
-  margin-top: 25px;
   font-size: 14px;
 }
 
@@ -142,6 +167,7 @@ button {
 .stats {
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
   margin: 15px 0;
 }
 
@@ -168,31 +194,6 @@ footer {
   }
 
   #dnaCanvas {
-    height: 290px;
+    height: 320px;
   }
-}
-.controls {
-  display: grid;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-.controls label {
-  color: #55d8ff;
-  font-size: 14px;
-}
-
-.controls select,
-.controls input {
-  padding: 12px;
-  background: #080e1b;
-  color: white;
-  border: 1px solid #42617e;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-#generateButton {
-  background: #59dfa0;
-  color: #07111d;
 }
