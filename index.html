@@ -27,6 +27,32 @@
 
     <input id="sequenceInput" value="ATGCGTAC"
       placeholder="ATGCGTAC" maxlength="80">
+    
+    <div class="controls">
+
+  <label>Strand Mode</label>
+  <select id="strandMode">
+    <option value="single">Single Strand</option>
+    <option value="double" selected>Double Strand</option>
+  </select>
+
+  <label>Choose Base</label>
+  <select id="baseChoice">
+    <option value="A">A</option>
+    <option value="T">T</option>
+    <option value="G">G</option>
+    <option value="C">C</option>
+  </select>
+
+  <label>Number of Bases</label>
+  <input type="number" id="baseCount"
+    min="1" max="80" value="5">
+
+  <button id="generateButton">
+    Generate DNA
+  </button>
+
+    </div>
 
     <div class="buttons">
       <button data-base="A">A</button>
