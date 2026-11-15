@@ -5,6 +5,10 @@ const ctx = canvas.getContext("2d");
 const input = document.getElementById("sequenceInput");
 const complementBox = document.getElementById("complement");
 
+const strandMode = document.getElementById("strandMode");
+const baseChoice = document.getElementById("baseChoice");
+const baseCount = document.getElementById("baseCount");
+const generateButton = document.getElementById("generateButton");
 const colors = {
   A: "#4cbaff",
   T: "#ffb65c",
@@ -24,7 +28,17 @@ let angle = 0;
 let rotating = true;
 let dragging = false;
 let lastX = 0;
+generateButton.addEventListener("click", () => {
+  const base = baseChoice.value;
+  const count = Math.max(1, Math.min(80, Number(baseCount.value) || 1));
 
+  sequence = base.repeat(count);
+  input.value = sequence;
+
+  update();
+});
+
+strandMode.addEventListener("change", update);
 function resize() {
   const rect = canvas.getBoundingClientRect();
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
