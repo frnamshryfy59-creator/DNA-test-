@@ -413,7 +413,7 @@ function update() {
   // بازسازی مدل سه‌بعدی
   buildDNA();
 
-
+}
 
 /* =================================
    10. GENERATE REPEATED DNA
