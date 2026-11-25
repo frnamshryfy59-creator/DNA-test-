@@ -188,12 +188,12 @@ footer {
   margin: 25px;
 }
 
-@media (max-width: 400px) {
-  body {
-    padding: 12px;
+@media (min-width: 768px) {
+  main {
+    max-width: 900px;
   }
 
   #dnaCanvas {
-    height: 320px;
+    height: 420px;
   }
-}
+}  
