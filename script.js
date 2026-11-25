@@ -1,5 +1,12 @@
-const canvas = document.getElementById("dnaCanvas");
-const ctx = canvas.getContext("2d");
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+
+/* =================================
+   1. CONNECT HTML ELEMENTS
+================================= */
+
+const viewer = document.getElementById("dnaViewer");
 
 const input = document.getElementById("sequenceInput");
 const complementBox = document.getElementById("complement");
@@ -9,11 +16,18 @@ const strandMode = document.getElementById("strandMode");
 const baseChoice = document.getElementById("baseChoice");
 const baseCount = document.getElementById("baseCount");
 
+const rotateButton = document.getElementById("rotateButton");
+
+
+/* =================================
+   2. DNA DATA
+================================= */
+
 const colors = {
-  A: "#4cbaff",
-  T: "#ffb65c",
-  G: "#59dfa0",
-  C: "#bc8cff"
+  A: 0x55bfff,
+  T: 0xffad55,
+  G: 0x59dfa0,
+  C: 0xc17aff
 };
 
 const pairs = {
@@ -24,171 +38,358 @@ const pairs = {
 };
 
 let sequence = "GGGGG";
-let angle = 0;
+
 let rotating = true;
 let dragging = false;
-let lastX = 0;
 
-function resize() {
-  const rect = canvas.getBoundingClientRect();
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+let previousX = 0;
+let previousY = 0;
 
-  canvas.width = rect.width * dpr;
-  canvas.height = rect.height * dpr;
 
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  draw();
+/* =================================
+   3. THREE.JS SCENE
+================================= */
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  45,
+  1,
+  0.1,
+  1000
+);
+
+camera.position.set(0, 0, 15);
+
+const renderer = new THREE.WebGLRenderer({
+  antialias: true,
+  alpha: true
+});
+
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio || 1, 2)
+);
+
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+viewer.appendChild(renderer.domElement);
+
+
+/* =================================
+   4. LIGHTING
+================================= */
+
+scene.add(
+  new THREE.AmbientLight(0xffffff, 1.5)
+);
+
+const light = new THREE.PointLight(0xffffff, 80);
+
+light.position.set(4, 5, 8);
+
+scene.add(light);
+
+
+/* =================================
+   5. DNA GROUP
+================================= */
+
+const dna = new THREE.Group();
+
+scene.add(dna);
+
+
+/* =================================
+   6. CREATE DNA OBJECTS
+================================= */
+
+// ساخت یک مهره سه‌بعدی
+
+function sphere(position, color, size) {
+
+  const geometry = new THREE.SphereGeometry(
+    size,
+    20,
+    20
+  );
+
+  const material = new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: color,
+    emissiveIntensity: 0.22,
+    roughness: 0.35
+  });
+
+  const mesh = new THREE.Mesh(
+    geometry,
+    material
+  );
+
+  mesh.position.copy(position);
+
+  dna.add(mesh);
 }
 
-function draw() {
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
 
-  ctx.clearRect(0, 0, w, h);
+// ساخت اتصال استوانه‌ای بین دو نقطه
 
-  const centerX = w / 2;
-  const centerY = h / 2;
-  const radius = strandMode.value === "single" ? 0 : Math.min(w * 0.25, 130);
+function rod(start, end, color, thickness) {
 
-  const total = sequence.length;
+  const direction = new THREE.Vector3()
+    .subVectors(end, start);
 
-  if (total === 0) {
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText("Enter DNA bases", centerX, centerY);
+  const geometry = new THREE.CylinderGeometry(
+    thickness,
+    thickness,
+    direction.length(),
+    12
+  );
+
+  const material = new THREE.MeshStandardMaterial({
+    color: color,
+    emissive: color,
+    emissiveIntensity: 0.12
+  });
+
+  const mesh = new THREE.Mesh(
+    geometry,
+    material
+  );
+
+  mesh.position.copy(start)
+    .add(end)
+    .multiplyScalar(0.5);
+
+  mesh.quaternion.setFromUnitVectors(
+    new THREE.Vector3(0, 1, 0),
+    direction.normalize()
+  );
+
+  dna.add(mesh);
+}
+
+
+/* =================================
+   7. REMOVE OLD DNA MODEL
+================================= */
+
+function clearDNA() {
+
+  while (dna.children.length > 0) {
+
+    const object = dna.children[0];
+
+    dna.remove(object);
+
+    if (object.geometry) {
+      object.geometry.dispose();
+    }
+
+    if (object.material) {
+
+      if (Array.isArray(object.material)) {
+        object.material.forEach(material => material.dispose());
+      } else {
+        object.material.dispose();
+      }
+
+    }
+
+  }
+
+}
+
+
+/* =================================
+   8. BUILD DNA MODEL
+================================= */
+
+
+function buildDNA() {
+
+  clearDNA();
+
+  const count = sequence.length;
+
+  if (count === 0) {
     return;
   }
 
-  const step = Math.min(24, (h - 45) / Math.max(total - 1, 1));
-  const points = [];
+  // پارامترهای هندسی تقریبی B-DNA
+  const radius = 2.0;
+  const rise = 0.68;
+  const anglePerBase = (2 * Math.PI) / 10.5;
 
-  for (let i = 0; i < total; i++) {
-    const theta = i * 0.75 + angle;
-    const y = centerY + (i - (total - 1) / 2) * step;
+  const leftPoints = [];
+  const rightPoints = [];
 
-    const x1 = strandMode.value === "single"
-      ? centerX + Math.cos(theta) * 45
-      : centerX + Math.cos(theta) * radius;
+  const isSingle = strandMode.value === "single";
 
-    const x2 = centerX - Math.cos(theta) * radius;
+  for (let i = 0; i < count; i++) {
 
-    points.push({
-      x1,
-      x2,
+    const angle = i * anglePerBase;
+
+    const y = ((count - 1) / 2 - i) * rise;
+
+    const left = new THREE.Vector3(
+      radius * Math.cos(angle),
       y,
-      z1: Math.sin(theta),
-      z2: -Math.sin(theta),
-      i
-    });
-  }
+      radius * Math.sin(angle)
+    );
 
-  // First backbone
-  ctx.beginPath();
+    const right = new THREE.Vector3(
+      radius * Math.cos(angle + Math.PI),
+      y,
+      radius * Math.sin(angle + Math.PI)
+    );
 
-  points.forEach((p, i) => {
-    if (i === 0) {
-      ctx.moveTo(p.x1, p.y);
-    } else {
-      ctx.lineTo(p.x1, p.y);
-    }
-  });
+    leftPoints.push(left);
+    rightPoints.push(right);
 
-  ctx.strokeStyle = "#55d8ff";
-  ctx.lineWidth = 4;
-  ctx.stroke();
+    const base = sequence[i];
+    const opposite = pairs[base];
 
-  // Second backbone only in double strand mode
-  if (strandMode.value === "double") {
-    ctx.beginPath();
+    if (isSingle) {
 
-    points.forEach((p, i) => {
-      if (i === 0) {
-        ctx.moveTo(p.x2, p.y);
-      } else {
-        ctx.lineTo(p.x2, p.y);
-      }
-    });
+      // ستون فقرات برجسته‌تر
+      sphere(left, 0x55d8ff, 0.19);
 
-    ctx.strokeStyle = "#a17aff";
-    ctx.lineWidth = 4;
-    ctx.stroke();
-  }
+      // جهت حرکت باز به سمت مرکز مارپیچ
+      const inward = new THREE.Vector3(
+        -Math.cos(angle),
+        0,
+        -Math.sin(angle)
+      );
 
-  points.forEach(p => {
-    const base = sequence[p.i];
+      const baseTip = left.clone()
+        .add(inward.multiplyScalar(1.15));
 
-    function sphere(x, y, color, z, letter) {
-      const r = 10 + z * 2;
+      // زبانه رنگی باز
+      rod(left, baseTip, colors[base], 0.14);
 
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
+      sphere(baseTip, colors[base], 0.23);
 
-      ctx.fillStyle = color;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 12;
-      ctx.fill();
-
-      ctx.shadowBlur = 0;
-
-      ctx.fillStyle = "#07111d";
-      ctx.font = "bold 11px Arial";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(letter, x, y);
-    }
-
-    if (strandMode.value === "double") {
-      const opposite = pairs[base];
-
-      ctx.beginPath();
-      ctx.moveTo(p.x1, p.y);
-      ctx.lineTo(p.x2, p.y);
-      ctx.strokeStyle = "#a8c5df";
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      sphere(p.x1, p.y, colors[base], p.z1, base);
-      sphere(p.x2, p.y, colors[opposite], p.z2, opposite);
+      // جزئیات کوچک روی باز
+      const detail = left.clone().lerp(baseTip, 0.55);
+      sphere(detail, colors[base], 0.11);
 
     } else {
-      sphere(p.x1, p.y, colors[base], p.z1, base);
+
+      // حالت دو رشته‌ای قبلی
+      sphere(left, 0x55d8ff, 0.13);
+      sphere(right, 0xc17aff, 0.13);
+
+      const middle = left.clone()
+        .add(right)
+        .multiplyScalar(0.5);
+
+      rod(left, middle, colors[base], 0.09);
+      rod(middle, right, colors[opposite], 0.09);
+
+      sphere(
+        left.clone().lerp(middle, 0.35),
+        colors[base],
+        0.15
+      );
+
+      sphere(
+        right.clone().lerp(middle, 0.35),
+        colors[opposite],
+        0.15
+      );
     }
-  });
-    // === M1: برچسب‌های جهت 5' و 3' ===
-  const yTop = points[0].y;
-  const yBottom = points[total - 1].y;
-  const helixWidth = strandMode.value === "single" ? 45 : radius;
-  const labelOffset = helixWidth + 25;
-
-  ctx.fillStyle = "#ffd95e";
-  ctx.font = "bold 13px Arial";
-  ctx.textBaseline = "middle";
-
-  // رشته اول: 5' در بالا، 3' در پایین
-  ctx.textAlign = "left";
-  ctx.fillText("5'", centerX + labelOffset, yTop);
-  ctx.fillText("3'", centerX + labelOffset, yBottom);
-
-  // رشته دوم: آنتی‌پارالل (3' در بالا، 5' در پایین)
-  if (strandMode.value === "double") {
-    ctx.textAlign = "right";
-    ctx.fillText("3'", centerX - labelOffset, yTop);
-    ctx.fillText("5'", centerX - labelOffset, yBottom);
   }
+
+  // ستون فقرات پیوسته
+  function backbone(points, color, thickness) {
+
+    if (points.length < 2) {
+      return;
+    }
+
+    const curve = new THREE.CatmullRomCurve3(points);
+
+    const geometry = new THREE.TubeGeometry(
+      curve,
+      Math.max(24, count * 10),
+      thickness,
+      12,
+      false
+    );
+
+    const material = new THREE.MeshStandardMaterial({
+      color: color,
+      emissive: color,
+      emissiveIntensity: isSingle ? 0.65 : 0.25,
+      roughness: 0.3,
+      metalness: 0.25
+    });
+
+    dna.add(new THREE.Mesh(geometry, material));
+  }
+
+  if (isSingle) {
+
+    backbone(leftPoints, 0x55d8ff, 0.11);
+
+    // نشانگرهای دو انتهای رشته
+    sphere(leftPoints[0], 0xffd166, 0.25);
+    sphere(leftPoints[count - 1], 0xffd166, 0.25);
+
+  } else {
+
+    backbone(leftPoints, 0x55d8ff, 0.065);
+    backbone(rightPoints, 0xc17aff, 0.065);
+  }
+
+  // تنظیم فاصله دوربین
+  const modelHeight = Math.max(
+    4,
+    (count - 1) * rise + 3
+  );
+
+  const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+
+  const distance =
+    (modelHeight / 2) / Math.tan(verticalFov / 2);
+
+  camera.position.set(
+    0,
+    0,
+    Math.max(10, distance * 1.25)
+  );
+
+  camera.lookAt(0, 0, 0);
 }
 
+
+
+/* =================================
+   9. UPDATE DNA INFORMATION
+================================= */
+
 function update() {
+
   const complementary = [...sequence]
     .map(base => pairs[base])
     .join("");
 
   complementPanel.style.display =
-    strandMode.value === "double" ? "block" : "none";
+    strandMode.value === "double"
+      ? "block"
+      : "none";
 
-  complementBox.textContent = complementary || "---";
+  complementBox.textContent =
+    complementary || "---";
+
+
+  // تعداد بازها
 
   document.getElementById("count").textContent =
     sequence.length;
+
+
+  // محاسبه درصد GC
 
   const gc = [...sequence].filter(
     base => base === "G" || base === "C"
@@ -201,10 +402,18 @@ function update() {
   document.getElementById("gc").textContent =
     percent + "%";
 
-  draw();
+
+  // بازسازی مدل سه‌بعدی
+
+  buildDNA();
+
 }
 
-// Generate repeated bases
+
+/* =================================
+   10. GENERATE REPEATED DNA
+================================= */
+
 document.getElementById("generateButton")
   .addEventListener("click", () => {
 
@@ -212,7 +421,10 @@ document.getElementById("generateButton")
 
     const count = Math.max(
       1,
-      Math.min(80, Number(baseCount.value) || 1)
+      Math.min(
+        80,
+        Number(baseCount.value) || 1
+      )
     );
 
     sequence = base.repeat(count);
@@ -220,91 +432,212 @@ document.getElementById("generateButton")
     input.value = sequence;
 
     update();
+
   });
 
-// Change strand mode
-strandMode.addEventListener("change", update);
 
-// Manual sequence input
+/* =================================
+   11. CHANGE STRAND MODE
+================================= */
+
+strandMode.addEventListener(
+  "change",
+  update
+);
+
+
+/* =================================
+   12. CUSTOM DNA SEQUENCE
+================================= */
+
 input.addEventListener("input", () => {
+
   sequence = input.value
     .toUpperCase()
     .replace(/[^ATGC]/g, "")
     .slice(0, 80);
 
   input.value = sequence;
+
   update();
+
 });
 
-// Add individual bases
+
+/* =================================
+   13. ADD INDIVIDUAL BASES
+================================= */
+
 document.querySelectorAll("[data-base]")
   .forEach(button => {
+
     button.addEventListener("click", () => {
+
       sequence = (
         sequence + button.dataset.base
       ).slice(0, 80);
 
       input.value = sequence;
+
       update();
+
     });
+
   });
 
-// Clear
+
+/* =================================
+   14. CLEAR SEQUENCE
+================================= */
+
 document.getElementById("clearButton")
   .addEventListener("click", () => {
+
     sequence = "";
+
     input.value = "";
+
     update();
+
   });
 
-// Rotation
-document.getElementById("rotateButton")
-  .addEventListener("click", event => {
-    rotating = !rotating;
 
-    event.target.textContent =
-      rotating ? "Pause Rotation" : "Resume Rotation";
-  });
+/* =================================
+   15. ROTATION CONTROL
+================================= */
 
-// Touch and mouse rotation
-canvas.addEventListener("pointerdown", event => {
-  dragging = true;
-  lastX = event.clientX;
-  canvas.setPointerCapture(event.pointerId);
+rotateButton.addEventListener("click", () => {
+
+  rotating = !rotating;
+
+  rotateButton.textContent = rotating
+    ? "Pause Rotation"
+    : "Resume Rotation";
+
 });
 
-canvas.addEventListener("pointermove", event => {
-  if (!dragging) return;
 
-  const dx = event.clientX - lastX;
-  angle += dx * 0.012;
-  lastX = event.clientX;
+/* =================================
+   16. TOUCH AND MOUSE ROTATION
+================================= */
 
-  draw();
-});
+renderer.domElement.addEventListener(
+  "pointerdown",
+  event => {
+
+    dragging = true;
+
+    previousX = event.clientX;
+    previousY = event.clientY;
+
+    renderer.domElement.setPointerCapture(
+      event.pointerId
+    );
+
+  }
+);
+
+
+renderer.domElement.addEventListener(
+  "pointermove",
+  event => {
+
+    if (!dragging) return;
+
+    const dx = event.clientX - previousX;
+    const dy = event.clientY - previousY;
+
+    dna.rotation.y += dx * 0.008;
+
+    dna.rotation.x += dy * 0.008;
+
+    previousX = event.clientX;
+    previousY = event.clientY;
+
+  }
+);
+
 
 function stopDragging() {
   dragging = false;
 }
 
-canvas.addEventListener("pointerup", stopDragging);
-canvas.addEventListener("pointercancel", stopDragging);
+renderer.domElement.addEventListener(
+  "pointerup",
+  stopDragging
+);
 
-// Animation
-function animate() {
-  if (rotating && !dragging) {
-    angle += 0.012;
-    draw();
-  }
+renderer.domElement.addEventListener(
+  "pointercancel",
+  stopDragging
+);
 
-  requestAnimationFrame(animate);
+renderer.domElement.addEventListener(
+  "lostpointercapture",
+  stopDragging
+);
+
+
+/* =================================
+   17. RESIZE VIEWER
+================================= */
+
+function resizeViewer() {
+
+  const width = viewer.clientWidth;
+  const height = viewer.clientHeight;
+
+  if (!width || !height) return;
+
+  camera.aspect = width / height;
+
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(
+    width,
+    height
+  );
+
 }
 
-// Start
-input.value = sequence;
-resize();
+const resizeObserver = new ResizeObserver(
+  resizeViewer
+);
 
-window.addEventListener("resize", resize);
+resizeObserver.observe(viewer);
+
+
+/* =================================
+   18. ANIMATION LOOP
+================================= */
+
+function animate() {
+
+  requestAnimationFrame(animate);
+
+  if (rotating && !dragging) {
+
+    dna.rotation.y += 0.006;
+
+  }
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+
+/* =================================
+   19. START DNA LAB
+================================= */
+
+input.value = sequence;
 
 update();
+
+resizeViewer();
+
 animate();
+    
