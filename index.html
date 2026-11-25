@@ -1,83 +1,155 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DNA LAB</title>
+
+  <title>DNA LAB - Molecular Explorer</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<header>
-  <h1>DNA <span>LAB</span></h1>
-  <p>INTERACTIVE DNA EXPLORER</p>
+<header class="lab-header">
+
+  <div class="brand">
+    <div class="brand-icon">DNA</div>
+
+    <div class="brand-info">
+      <h1>DNA <span>LAB</span></h1>
+      <p>MOLECULAR BIOLOGY & BIOINFORMATICS</p>
+    </div>
+  </div>
+
+  <div class="system-status">
+    <span class="status-dot"></span>
+    SYSTEM ONLINE
+  </div>
+
 </header>
 
 <main>
 
+  <!-- 3D DNA VIEWER -->
+
   <section class="viewer-card">
-    <h2>DNA STRUCTURE <span>● LIVE</span></h2>
-    <canvas id="dnaCanvas"></canvas>
-    <button id="rotateButton">Pause Rotation</button>
+
+    <h2>
+      DNA STRUCTURE
+      <span>● LIVE 3D</span>
+    </h2>
+
+    <div id="dnaViewer"></div>
+
+    <button id="rotateButton">
+      Pause Rotation
+    </button>
+
   </section>
 
+
+  <!-- DNA CONTROLS -->
+
   <section class="editor">
+
     <h2>DNA CONTROLS</h2>
 
     <label>Strand Mode</label>
+
     <select id="strandMode">
       <option value="single">Single Strand</option>
-      <option value="double">Double Strand</option>
+      <option value="double" selected>Double Strand</option>
     </select>
 
+
     <label>Choose Base</label>
+
     <select id="baseChoice">
+
       <option value="A">A - Adenine</option>
       <option value="T">T - Thymine</option>
       <option value="G" selected>G - Guanine</option>
       <option value="C">C - Cytosine</option>
+
     </select>
 
-    <label>Number of Bases</label>
-    <input type="number" id="baseCount"
-      min="1" max="80" value="5">
 
-    <button id="generateButton">Generate Repeated DNA</button>
+    <label>Number of Bases</label>
+
+    <input
+      type="number"
+      id="baseCount"
+      min="1"
+      max="80"
+      value="5"
+    >
+
+    <button id="generateButton">
+      Generate Repeated DNA
+    </button>
+
 
     <div class="divider"></div>
 
+
     <h2>Custom DNA Sequence</h2>
+
     <p>Enter any combination of A, T, G and C</p>
 
-    <input id="sequenceInput"
+    <input
+      id="sequenceInput"
       value="GGGGG"
       maxlength="80"
-      placeholder="Example: GGGGG">
+      placeholder="Example: GGGGG"
+    >
+
 
     <div class="buttons">
+
       <button data-base="A">A</button>
       <button data-base="T">T</button>
       <button data-base="G">G</button>
       <button data-base="C">C</button>
+
     </div>
+
 
     <div id="complementPanel">
+
       <h3>Complementary Strand</h3>
+
       <div id="complement">CCCCC</div>
+
     </div>
+
 
     <div class="stats">
+
       <p>Bases: <strong id="count">5</strong></p>
+
       <p>GC Content: <strong id="gc">100%</strong></p>
+
     </div>
 
-    <button id="clearButton">Clear Sequence</button>
+
+    <button id="clearButton">
+      Clear Sequence
+    </button>
+
   </section>
 
 </main>
 
-<footer>DNA LAB · MOLECULAR EXPLORER</footer>
 
-<script src="script.js"></script>
+<footer>
+  DNA LAB · MOLECULAR EXPLORER
+</footer>
+
+
+<!-- JavaScript module will be connected in step 3 -->
+
+<script type="module" src="script.js"></script>
+
 </body>
 </html>
