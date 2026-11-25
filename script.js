@@ -418,13 +418,6 @@ function update() {
    COPY DNA SEQUENCES
 ================================= */
 
-document.querySelectorAll("[data-copy]")
-  .forEach(button => {
-
-    button.addEventListener("click", async () => {
-
-      const targetId = button.dataset.copy;
-
       const sequenceText =
         document.getElementById(targetId).textContent;
 
