@@ -1,7 +1,11 @@
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-
+let THREE;
+try {
+  THREE = await import("https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js");
+} catch (error) {
+  document.getElementById("dnaViewer").innerHTML = "<p style='color:#ffad55; text-align:center; padding:20px;'>Failed to load 3D engine. Please check your internet connection.</p>";
+  console.error("Three.js failed to load:", error);
+}
 /* =================================
    1. CONNECT HTML ELEMENTS
 ================================= */
@@ -455,17 +459,18 @@ strandMode.addEventListener(
    12. CUSTOM DNA SEQUENCE
 ================================= */
 
+let typingTimer;
+
 input.addEventListener("input", () => {
-
-  sequence = input.value
-    .toUpperCase()
-    .replace(/[^ATGC]/g, "")
-    .slice(0, 80);
-
+  sequence = input.value.toUpperCase().replace(/[^ATGC]/g, "").slice(0, 80);
   input.value = sequence;
-
-  update();
-
+  
+  clearTimeout(typingTimer); // تایمر قبلی را پاک کن
+  
+  // ۳۰۰ میلی‌ثانیه صبر کن، اگر کاربر دکمه دیگری نزد، تابع update اجرا شود
+  typingTimer = setTimeout(() => {
+    update(); 
+  }, 300); 
 });
 
 
