@@ -487,4 +487,42 @@ footer {
     min-height: 290px;
   }
 
+/* =================================
+   DNA DIRECTION AND COPY
+================================= */
+
+.sequence-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.sequence-line > span {
+  color: #ffd166;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.sequence-line > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.copy-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  min-height: 40px;
+
+  background: #203e60;
+  color: #55d8ff;
+  font-size: 12px;
+}
+
+.copy-button:active {
+  background: #2c557e;
+}
+
 }
