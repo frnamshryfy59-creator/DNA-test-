@@ -714,7 +714,17 @@ function animate() {
   );
 
 }
-
+document.getElementById("downloadFasta").addEventListener("click", () => {
+  if (!sequence) return;
+  const fastaContent = `>DNA_LAB_Sequence | GC: ${document.getElementById("gc").textContent}\n${sequence}`;
+  const blob = new Blob([fastaContent], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "sequence.fasta";
+  a.click();
+  URL.revokeObjectURL(url);
+});
 
 /* =================================
    19. START DNA LAB
