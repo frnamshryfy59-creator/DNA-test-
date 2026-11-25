@@ -413,58 +413,6 @@ function update() {
   // بازسازی مدل سه‌بعدی
   buildDNA();
 
-  
-/* =================================
-   COPY DNA SEQUENCES
-================================= */
-
-      const sequenceText =
-        document.getElementById(targetId).textContent;
-
-      if (!sequenceText || sequenceText === "---") {
-        return;
-      }
-
-      try {
-
-        await navigator.clipboard.writeText(sequenceText);
-
-        button.textContent = "Copied!";
-
-      } catch (error) {
-
-        // روش جایگزین برای مرورگرهایی که Clipboard را نمی‌پذیرند
-        const temporaryInput = document.createElement("textarea");
-
-        temporaryInput.value = sequenceText;
-
-        document.body.appendChild(temporaryInput);
-
-        temporaryInput.select();
-
-        document.execCommand("copy");
-
-        temporaryInput.remove();
-
-        button.textContent = "Copied!";
-
-      }
-
-      setTimeout(() => {
-        button.textContent =
-          button.dataset.copy === "originalSequence"
-            ? "Copy Original"
-            : button.dataset.copy === "complement"
-              ? "Copy Complement"
-              : "Copy Reverse Complement";
-      }, 1500);
-
-    });
-
-  });
-
-}
-
 
 
 /* =================================
@@ -573,6 +521,44 @@ rotateButton.addEventListener("click", () => {
 
 });
 
+   /* =================================
+   COPY DNA SEQUENCES (اصلاح شده)
+================================= */
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const targetId = button.dataset.copy;
+    const sequenceText = document.getElementById(targetId).textContent;
+
+    // اگر توالی خالی بود، کاری نکن
+    if (!sequenceText || sequenceText === "---") {
+      return;
+    }
+
+    // ذخیره متن اصلی دکمه
+    const originalText = button.textContent;
+
+    try {
+      await navigator.clipboard.writeText(sequenceText);
+      button.textContent = "Copied!";
+    } catch (error) {
+      // روش جایگزین برای مرورگرهای قدیمی
+      const tempInput = document.createElement("textarea");
+      tempInput.value = sequenceText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      tempInput.remove();
+      
+      button.textContent = "Copied!";
+    }
+
+    // برگرداندن متن دکمه به حالت اول بعد از ۱.۵ ثانیه
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 1500);
+  });
+});
 
 /* =================================
    16. TOUCH AND MOUSE ROTATION
