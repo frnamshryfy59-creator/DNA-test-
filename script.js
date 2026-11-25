@@ -368,29 +368,36 @@ function buildDNA() {
    9. UPDATE DNA INFORMATION
 ================================= */
 
+
 function update() {
 
+  // ساخت رشته مکمل
   const complementary = [...sequence]
     .map(base => pairs[base])
     .join("");
 
-  complementPanel.style.display =
-    strandMode.value === "double"
-      ? "block"
-      : "none";
+  // ساخت رشته مکمل معکوس
+  const reverseComplement = [...complementary]
+    .reverse()
+    .join("");
+
+  // نمایش هر سه توالی
+  document.getElementById("originalSequence").textContent =
+    sequence || "---";
 
   complementBox.textContent =
     complementary || "---";
 
+  document.getElementById("reverseComplement").textContent =
+    reverseComplement || "---";
+
 
   // تعداد بازها
-
   document.getElementById("count").textContent =
     sequence.length;
 
 
   // محاسبه درصد GC
-
   const gc = [...sequence].filter(
     base => base === "G" || base === "C"
   ).length;
@@ -404,10 +411,10 @@ function update() {
 
 
   // بازسازی مدل سه‌بعدی
-
   buildDNA();
 
 }
+
 
 
 /* =================================
@@ -640,4 +647,4 @@ update();
 resizeViewer();
 
 animate();
-    
+     
