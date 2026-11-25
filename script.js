@@ -413,6 +413,63 @@ function update() {
   // بازسازی مدل سه‌بعدی
   buildDNA();
 
+  
+/* =================================
+   COPY DNA SEQUENCES
+================================= */
+
+document.querySelectorAll("[data-copy]")
+  .forEach(button => {
+
+    button.addEventListener("click", async () => {
+
+      const targetId = button.dataset.copy;
+
+      const sequenceText =
+        document.getElementById(targetId).textContent;
+
+      if (!sequenceText || sequenceText === "---") {
+        return;
+      }
+
+      try {
+
+        await navigator.clipboard.writeText(sequenceText);
+
+        button.textContent = "Copied!";
+
+      } catch (error) {
+
+        // روش جایگزین برای مرورگرهایی که Clipboard را نمی‌پذیرند
+        const temporaryInput = document.createElement("textarea");
+
+        temporaryInput.value = sequenceText;
+
+        document.body.appendChild(temporaryInput);
+
+        temporaryInput.select();
+
+        document.execCommand("copy");
+
+        temporaryInput.remove();
+
+        button.textContent = "Copied!";
+
+      }
+
+      setTimeout(() => {
+        button.textContent =
+          button.dataset.copy === "originalSequence"
+            ? "Copy Original"
+            : button.dataset.copy === "complement"
+              ? "Copy Complement"
+              : "Copy Reverse Complement";
+      }, 1500);
+
+    });
+
+  });
+
 }
 
 
