@@ -1,95 +1,254 @@
+/* =================================
+   DNA LAB - GLOBAL DESIGN
+================================= */
 
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
+  width: 100%;
+  min-height: 100%;
   margin: 0;
-  padding: 18px;
+}
+
+body {
+  padding: clamp(10px, 2vw, 28px);
   background: #080e1b;
   color: white;
   font-family: Arial, sans-serif;
 }
 
-header {
-  text-align: center;
-  margin-bottom: 25px;
+
+/* =================================
+   HEADER
+================================= */
+
+.lab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  padding: 22px 26px;
+
+  background: linear-gradient(
+    135deg,
+    #111c30,
+    #142b42
+  );
+
+  border: 1px solid #294b68;
+  border-radius: 18px;
+
+  box-shadow: 0 8px 30px rgba(0,0,0,.25);
 }
 
-header h1 {
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.brand-icon {
+  width: 58px;
+  height: 58px;
+
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  border: 1px solid #55d8ff;
+  border-radius: 15px;
+
   color: #55d8ff;
-  letter-spacing: 5px;
+  font-size: 17px;
+  font-weight: bold;
+
+  box-shadow: 0 0 20px rgba(85,216,255,.15);
 }
 
-header h1 span {
+.brand-info h1 {
+  margin: 0;
+  color: #55d8ff;
+  font-size: clamp(23px,3vw,34px);
+  letter-spacing: 3px;
+}
+
+.brand-info h1 span {
   color: white;
 }
 
-header p {
-  color: #8294ad;
-  font-size: 12px;
+.brand-info p {
+  margin: 7px 0 0;
+  color: #91a9c2;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  line-height: 1.5;
 }
 
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #59dfa0;
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 9px;
+  height: 9px;
+  background: #59dfa0;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #59dfa0;
+}
+
+
+/* =================================
+   MAIN LAYOUT
+================================= */
+
 main {
-  max-width: 650px;
-  margin: auto;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.5fr)
+    minmax(320px, .8fr);
+
+  align-items: start;
+  gap: clamp(14px, 2vw, 28px);
 }
 
 .viewer-card,
 .editor {
+  min-width: 0;
+  padding: clamp(16px, 2vw, 26px);
+
   background: #111c30;
-  border: 1px solid #263a55;
-  border-radius: 15px;
-  padding: 18px;
-  margin-bottom: 18px;
+  border: 1px solid #294b68;
+  border-radius: 18px;
+
+  box-shadow: 0 10px 35px rgba(0,0,0,.2);
 }
 
+
+/* =================================
+   3D DNA VIEWER
+================================= */
+
 .viewer-card h2 {
-  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin: 0 0 18px;
+  color: white;
+  font-size: 17px;
+  letter-spacing: 1px;
 }
 
 .viewer-card h2 span {
-  float: right;
-  color: #55e6a0;
+  color: #59dfa0;
   font-size: 11px;
+  white-space: nowrap;
 }
 
-#dnaCanvas {
+#dnaViewer {
+  position: relative;
+
   width: 100%;
-  height: 350px;
-  display: block;
-  background: radial-gradient(circle, #183b5c, #080e1b);
-  border-radius: 12px;
+  height: clamp(340px, 65svh, 700px);
+  min-height: 340px;
+
+  overflow: hidden;
+  border-radius: 15px;
+
+  background: radial-gradient(
+    circle at center,
+    #153a55,
+    #091426 75%
+  );
+
+  border: 1px solid #294b68;
+
   touch-action: none;
 }
+
+#dnaViewer canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+
+/* =================================
+   BUTTONS
+================================= */
 
 button {
   cursor: pointer;
   border: none;
   border-radius: 8px;
-  padding: 12px;
+  padding: 13px;
+
+  font-size: 15px;
   font-weight: bold;
+
+  transition:
+    background .2s,
+    transform .15s;
+}
+
+button:active {
+  transform: scale(.98);
 }
 
 #rotateButton {
-  margin-top: 12px;
-  background: #203b59;
-  color: white;
   width: 100%;
+  margin-top: 14px;
+
+  background: #203e60;
+  color: white;
+
+  min-height: 48px;
 }
+
+#rotateButton:active {
+  background: #2c557e;
+}
+
+
+/* =================================
+   DNA EDITOR
+================================= */
 
 .editor h2 {
   color: #55d8ff;
+  font-size: 19px;
 }
 
 .editor p {
   color: #91a2b9;
   font-size: 13px;
+  line-height: 1.6;
 }
 
 .editor label {
   display: block;
   margin: 17px 0 8px;
+
   color: #55d8ff;
   font-size: 14px;
 }
@@ -97,11 +256,15 @@ button {
 .editor input,
 .editor select {
   width: 100%;
-  padding: 14px;
+  min-height: 48px;
+  padding: 13px;
+
   background: #080e1b;
   color: white;
+
   border: 1px solid #42617e;
   border-radius: 8px;
+
   font-size: 16px;
 }
 
@@ -109,6 +272,11 @@ button {
   letter-spacing: 3px;
   text-transform: uppercase;
 }
+
+
+/* =================================
+   BASE BUTTONS
+================================= */
 
 .buttons {
   display: grid;
@@ -118,6 +286,7 @@ button {
 }
 
 .buttons button {
+  min-height: 48px;
   font-size: 22px;
   color: #07111d;
 }
@@ -138,12 +307,23 @@ button {
   background: #bc8cff;
 }
 
+
+/* =================================
+   GENERATE BUTTON
+================================= */
+
 #generateButton {
-  margin-top: 15px;
   width: 100%;
+  margin-top: 15px;
+
   background: #59dfa0;
   color: #07111d;
 }
+
+
+/* =================================
+   COMPLEMENTARY DNA
+================================= */
 
 .divider {
   height: 1px;
@@ -156,18 +336,27 @@ button {
 }
 
 #complement {
-  background: #080e1b;
   padding: 15px;
+
+  background: #080e1b;
   color: #59dfa0;
+
   overflow-wrap: anywhere;
   letter-spacing: 3px;
   border-radius: 8px;
 }
 
+
+/* =================================
+   DNA STATISTICS
+================================= */
+
 .stats {
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
+  gap: 8px;
+
   margin: 15px 0;
 }
 
@@ -175,25 +364,107 @@ button {
   color: #55d8ff;
 }
 
+
+/* =================================
+   CLEAR BUTTON
+================================= */
+
 #clearButton {
   width: 100%;
   background: #713c4a;
   color: white;
 }
 
+
+/* =================================
+   FOOTER
+================================= */
+
 footer {
+  max-width: 1200px;
+  margin: 25px auto;
+
   text-align: center;
-  color: #687c96;
+  color: #71859e;
   font-size: 11px;
-  margin: 25px;
+  letter-spacing: 1px;
 }
 
-@media (min-width: 768px) {
+
+/* =================================
+   TABLET
+================================= */
+
+@media (max-width: 900px) {
+
   main {
-    max-width: 900px;
+    grid-template-columns: 1fr;
   }
 
-  #dnaCanvas {
-    height: 420px;
+  #dnaViewer {
+    height: 55vh;
+    min-height: 340px;
   }
-}  
+
+}
+
+
+/* =================================
+   MOBILE
+================================= */
+
+@media (max-width: 500px) {
+
+  body {
+    padding: 10px;
+  }
+
+  .lab-header {
+    padding: 16px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .brand-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .viewer-card,
+  .editor {
+    padding: 14px;
+  }
+
+  #dnaViewer {
+    height: 52svh;
+    min-height: 320px;
+  }
+
+  .editor input,
+  .editor select {
+    font-size: 16px;
+  }
+
+}
+
+
+/* =================================
+   SMALL SCREENS
+================================= */
+
+@media (max-width: 350px) {
+
+  .brand-info p {
+    font-size: 9px;
+    letter-spacing: .5px;
+  }
+
+  .system-status {
+    font-size: 10px;
+  }
+
+  #dnaViewer {
+    min-height: 290px;
+  }
+
+}
