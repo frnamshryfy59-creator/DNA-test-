@@ -1,3 +1,4 @@
+
 /* =================================
    DNA LAB - GLOBAL DESIGN
 ================================= */
@@ -321,8 +322,9 @@ button:active {
 }
 
 
+
 /* =================================
-   COMPLEMENTARY DNA
+   DNA SEQUENCE ANALYSIS
 ================================= */
 
 .divider {
@@ -331,38 +333,56 @@ button:active {
   margin: 25px 0;
 }
 
-.editor h3 {
+#complementPanel {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.sequence-result {
+  padding: 13px;
+  background: #080e1b;
+  border: 1px solid #294b68;
+  border-radius: 10px;
+}
+
+.sequence-result h3 {
+  margin: 0 0 7px;
+  color: #55d8ff;
   font-size: 14px;
 }
 
-#complement {
-  padding: 15px;
+.sequence-result small {
+  display: block;
+  margin-bottom: 10px;
+  color: #91a2b9;
+  font-size: 11px;
+}
 
-  background: #080e1b;
-  color: #59dfa0;
-
+#originalSequence,
+#complement,
+#reverseComplement {
+  padding: 10px;
   overflow-wrap: anywhere;
+  word-break: break-all;
   letter-spacing: 3px;
-  border-radius: 8px;
+  line-height: 1.8;
+  border-radius: 7px;
+  background: #111c30;
 }
 
-
-/* =================================
-   DNA STATISTICS
-================================= */
-
-.stats {
-  display: flex;
-  justify-content: space-around;
-  flex-wrap: wrap;
-  gap: 8px;
-
-  margin: 15px 0;
-}
-
-.stats strong {
+#originalSequence {
   color: #55d8ff;
 }
+
+#complement {
+  color: #59dfa0;
+}
+
+#reverseComplement {
+  color: #c17aff;
+}
+
 
 
 /* =================================
