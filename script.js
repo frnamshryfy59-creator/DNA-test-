@@ -48,7 +48,7 @@ function draw() {
 
   const centerX = w / 2;
   const centerY = h / 2;
-  const radius = strandMode.value === "single" ? 0 : Math.min(w * 0.25, 80);
+  const radius = strandMode.value === "single" ? 0 : Math.min(w * 0.25, 130);
 
   const total = sequence.length;
 
@@ -154,6 +154,27 @@ function draw() {
       sphere(p.x1, p.y, colors[base], p.z1, base);
     }
   });
+    // === M1: برچسب‌های جهت 5' و 3' ===
+  const yTop = points[0].y;
+  const yBottom = points[total - 1].y;
+  const helixWidth = strandMode.value === "single" ? 45 : radius;
+  const labelOffset = helixWidth + 25;
+
+  ctx.fillStyle = "#ffd95e";
+  ctx.font = "bold 13px Arial";
+  ctx.textBaseline = "middle";
+
+  // رشته اول: 5' در بالا، 3' در پایین
+  ctx.textAlign = "left";
+  ctx.fillText("5'", centerX + labelOffset, yTop);
+  ctx.fillText("3'", centerX + labelOffset, yBottom);
+
+  // رشته دوم: آنتی‌پارالل (3' در بالا، 5' در پایین)
+  if (strandMode.value === "double") {
+    ctx.textAlign = "right";
+    ctx.fillText("3'", centerX - labelOffset, yTop);
+    ctx.fillText("5'", centerX - labelOffset, yBottom);
+  }
 }
 
 function update() {
