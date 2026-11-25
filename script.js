@@ -561,6 +561,45 @@ document.querySelectorAll("[data-copy]").forEach(button => {
 });
 
 /* =================================
+   COPY DNA SEQUENCES (اصلاح شده)
+================================= */
+
+document.querySelectorAll("[data-copy]").forEach(button => {
+  button.addEventListener("click", async () => {
+    const targetId = button.dataset.copy;
+    const sequenceText = document.getElementById(targetId).textContent;
+
+    // اگر توالی خالی بود، کاری نکن
+    if (!sequenceText || sequenceText === "---") {
+      return;
+    }
+
+    // ذخیره متن اصلی دکمه
+    const originalText = button.textContent;
+
+    try {
+      await navigator.clipboard.writeText(sequenceText);
+      button.textContent = "Copied!";
+    } catch (error) {
+      // روش جایگزین برای مرورگرهای قدیمی
+      const tempInput = document.createElement("textarea");
+      tempInput.value = sequenceText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      tempInput.remove();
+      
+      button.textContent = "Copied!";
+    }
+
+    // برگرداندن متن دکمه به حالت اول بعد از ۱.۵ ثانیه
+    setTimeout(() => {
+      button.textContent = originalText;
+    }, 1500);
+  });
+});
+
+/* =================================
    16. TOUCH AND MOUSE ROTATION
 ================================= */
 
