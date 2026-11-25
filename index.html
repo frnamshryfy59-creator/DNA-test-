@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,27 +116,48 @@
 
 
     
+
 <div id="complementPanel">
 
   <div class="sequence-result">
     <h3>Original Sequence</h3>
-    <small>5′ → 3′</small>
-    <div id="originalSequence">GGGGG</div>
+    <div class="sequence-line">
+      <span>5′</span>
+      <div id="originalSequence">GGGGG</div>
+      <span>3′</span>
+    </div>
+    <button class="copy-button" data-copy="originalSequence">
+      Copy Original
+    </button>
   </div>
 
   <div class="sequence-result">
     <h3>Complementary Strand</h3>
-    <small>3′ → 5′</small>
-    <div id="complement">CCCCC</div>
+    <div class="sequence-line">
+      <span>3′</span>
+      <div id="complement">CCCCC</div>
+      <span>5′</span>
+    </div>
+    <button class="copy-button" data-copy="complement">
+      Copy Complement
+    </button>
   </div>
 
   <div class="sequence-result">
     <h3>Reverse Complement</h3>
-    <small>5′ → 3′</small>
-    <div id="reverseComplement">CCCCC</div>
+    <div class="sequence-line">
+      <span>5′</span>
+      <span>→</span>
+      <div id="reverseComplement">CCCCC</div>
+      <span>3′</span>
+    </div>
+    <button class="copy-button" data-copy="reverseComplement">
+      Copy Reverse Complement
+    </button>
   </div>
 
 </div>
+
 
 
     </>
